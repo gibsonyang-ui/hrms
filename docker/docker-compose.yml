@@ -11,9 +11,13 @@ services:
       MYSQL_ROOT_PASSWORD: 123
     volumes:
       - mariadb-data:/var/lib/mysql
+    networks:
+      - hrms-network
 
   redis:
     image: redis:alpine
+    networks:
+      - hrms-network
 
   frappe:
     image: frappe/bench:latest
@@ -24,8 +28,17 @@ services:
     volumes:
       - .:/workspace
     ports:
-      - 8000:8000
-      - 9000:9000
+      - "0.0.0.0:8000:8000"
+      - "0.0.0.0:9000:9000"
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - hrms-network
 
 volumes:
   mariadb-data:
+
+networks:
+  hrms-network:
+    driver: bridge

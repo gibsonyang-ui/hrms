@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 if [ -d "/home/frappe/frappe-bench/apps/frappe" ]; then
     echo "Bench already exists, skipping init"
@@ -30,12 +30,23 @@ bench get-app hrms
 bench new-site hrms.localhost \
 --force \
 --mariadb-root-password 123 \
---admin-password admin \
+--admin-password Gibson1234! \
 --no-mariadb-socket
 
 bench --site hrms.localhost install-app hrms
 bench --site hrms.localhost set-config developer_mode 1
 bench --site hrms.localhost enable-scheduler
+
+# Set Chinese language support
+bench --site hrms.localhost set-config lang zh
+bench --site hrms.localhost set-config country China
+bench --site hrms.localhost set-config time_zone Asia/Shanghai
+
+# Configure system settings for Chinese interface
+bench --site hrms.localhost execute "frappe.db.set_value('System Settings', 'System Settings', 'language', 'zh')"
+bench --site hrms.localhost execute "frappe.db.set_value('System Settings', 'System Settings', 'country', 'China')"
+bench --site hrms.localhost execute "frappe.db.set_value('System Settings', 'System Settings', 'time_zone', 'Asia/Shanghai')"
+
 bench --site hrms.localhost clear-cache
 bench use hrms.localhost
 
